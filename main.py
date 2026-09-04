@@ -45,19 +45,13 @@ screen = pygame.display.set_mode(
 )
 
 
-pygame.display.set_caption(
-    "ML Car Track Simulation"
-)
+pygame.display.set_caption("ML Car Track Simulation")
 
 
 clock = pygame.time.Clock()
 
 
-font = pygame.font.SysFont(
-    "consolas",
-    26,
-    bold=True
-)
+font = pygame.font.SysFont("consolas", 26, bold=True)
 
 
 small_font = pygame.font.SysFont(
@@ -84,9 +78,7 @@ TRACK_PATH = os.path.join(
 )
 
 
-track_native = pygame.image.load(
-    TRACK_PATH
-).convert()
+track_native = pygame.image.load(TRACK_PATH).convert()
 
 
 track_image = pygame.transform.smoothscale(
@@ -107,10 +99,8 @@ collision_source = pygame.transform.scale(
 )
 
 
-# ============================================================
-# MODEL SAVE FILE
-# ============================================================
 
+# MODEL SAVE FILE
 MODEL_DIR = os.path.join(
     os.path.dirname(
         os.path.abspath(__file__)
@@ -128,10 +118,8 @@ MODEL_PATH = os.path.join(
 SAVE_EVERY_EPISODES = 25
 
 
-# ============================================================
-# SAVE MODEL
-# ============================================================
 
+# SAVE MODEL
 def save_model(
     model,
     episode,
@@ -162,11 +150,7 @@ def save_model(
             episode
     }
 
-
-    # --------------------------------------------------------
     # DQN ONLY
-    # --------------------------------------------------------
-
     if optimizer is not None:
 
         checkpoint[
@@ -184,11 +168,7 @@ def save_model(
         f"Model saved to {filename}"
     )
 
-
-# ============================================================
 # LOAD MODEL
-# ============================================================
-
 def load_model(
     model,
     filename=None,
@@ -213,21 +193,10 @@ def load_model(
     )
 
 
-    # --------------------------------------------------------
     # LOAD OPTIMIZER ONLY FOR DQN
-    # --------------------------------------------------------
-
-    if (
-        optimizer is not None
-        and
-        "optimizer_state"
-        in checkpoint
-    ):
-
+    if (optimizer is not None and "optimizer_state" in checkpoint):
         optimizer.load_state_dict(
-            checkpoint[
-                "optimizer_state"
-            ]
+            checkpoint["optimizer_state"]
         )
 
 
