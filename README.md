@@ -1,10 +1,10 @@
 I made this project to learn more about nueral networks and how they learn/evolve. I only wanted to focus of the training and brain part so the simulation was designed by claude code at first so I could focus on creating and tranning the brain
 
-# ml-car
+# NeuroRacer
 
 Cars that teach themselves to drive around a track I drew in an image editor. Each car has seven distance sensors, a tiny neural network for a brain, and a choice of three moves. Two different ways of learning are built in — a Deep Q-Network and a genetic algorithm — and a single flag in `config.py` switches between them.
 
-![100 cars, seeded from a trained model, on the crossRoad track](docs/demo.gif)
+![100 cars, seeded from a trained model, on track.png](docs/demo.gif)
 
 *One generation of 100 cars. Car 0 carries the saved `simpleJoe02` brain; the other 99 are mutated copies of it. The blue lines are the leading car's sensors.*
 
@@ -102,6 +102,16 @@ The tracks in `tracks/` are all MS-Paint-grade scribbles and work fine.
 
 ![still frame with sensors](docs/screenshot.png)
 
+### Regenerating the GIF
+
+`tools/render_demo.py` runs one generation headless (car 0 = the saved model, the rest mutated copies), writes `docs/demo.gif` and `docs/screenshot.png`, and needs `ffmpeg` on your PATH. With no arguments it uses the track and model from `config.py`:
+
+```bash
+python tools/render_demo.py
+python tools/render_demo.py --track speedway.png --model simpleJoe.pth --seconds 15 --fps 25
+python tools/render_demo.py --help
+```
+
 ## Project layout
 
 | File | |
@@ -116,19 +126,20 @@ The tracks in `tracks/` are all MS-Paint-grade scribbles and work fine.
 | `tracks/` | track images |
 | `models/` | saved brains (see below) |
 | `docs/` | the GIF and screenshot above |
+| `tools/render_demo.py` | regenerates them |
 
 ## Saved models
 
 The network changed shape as the project went on, so not every checkpoint in `models/` loads with the current 3-output brain. I've kept the old ones as a record of where it's been.
 
-| Model | Mode | Actions | Episodes | Loads today? |
-|---|---|---|---|---|
-| `Gilbert.pth`, `car_model01.pth` | DQN | 5 | 7,444 / 8,585 | no |
-| `F1car.pth`, `F1carCOPY.pth`, `carBrain03.pth`, `nascar.pth` | DQN | 6 | 6,000 – 11,000 | no |
-| `MutantHIGH.pth`, `MutantLOW.pth` | mutation experiments <!-- saved with optimizer state, so from the DQN-era code — correct me --> | 6 | 80 / 274 | no |
-| `simpleJoe.pth`, `simpleJoe02.pth` | evolution | 3 | 1,362 / 4,059 | **yes** |
+| Model | Mode | Actions | Episodes |
+|---|---|---|---|
+| `Gilbert.pth`, `car_model01.pth` | DQN | 5 | 7,444 / 8,585 |
+| `F1car.pth`, `F1carCOPY.pth`, `carBrain03.pth`, `nascar.pth` | DQN | 6 | 6,000 – 11,000 |
+| `MutantHIGH.pth`, `MutantLOW.pth` | mutation experiments <!-- saved with optimizer state, so from the DQN-era code — correct me --> | 6 | 80 / 274 |
+| `simpleJoe.pth`, `simpleJoe02.pth` | evolution | 3 | 1,362 / 4,059 |
 
-`simpleJoe02` is the one in the GIF — it clears 19 checkpoints of the 36 on `crossRoad.png` before crashing.
+`simpleJoe02` is the one in the GIF — on `track.png` it completes a lap and keeps going (21 gate crossings, 16 gates), and on the harder `crossRoad.png` it clears 19 of 36 checkpoints before crashing.
 
 ## What I learned
 
@@ -139,6 +150,5 @@ The network changed shape as the project went on, so not every checkpoint in `mo
 - **Evolution needs diversity.** Reloading the saved brain into all 100 cars just gives 100 copies of the same driver. Seeding one car and leaving the rest random was the difference between a population that improves and one that stalls.
 - **A smaller action space learned faster.** Going from 6 actions (with braking/reversing) to 3 (always accelerate, choose a direction) gave the cars less to get wrong — but changing the network shape orphaned every previously saved model.
 - **Training throughput matters more than I thought.** Cutting a generation short once only a few survivors are left, and capping steps per episode, made a real difference to how many generations I could run in a sitting.
-- **Painting the level is a free level editor.** Colour-coding gates in the image, then detecting them in code, meant I could sketch a new track in a minute. Reducing a scribbled line to a clean segment with an SVD was the neatest trick in the project.
-- **Physics details bite.** Sub-stepping movement (no tunnelling through walls) and using a segment-intersection test for gates (no skipping a gate at speed) both came out of watching cars do impossible things.
+
 

@@ -5,7 +5,7 @@ parent_evolution = True
 
 #model and track configuration
 MODEL_NAME = "simpleJoe02.pth"
-TRACK_NAME = "crossRoad.png"
+TRACK_NAME = "track.png"
 
 #car size and screen size
 WIDTH = 1200
@@ -20,7 +20,7 @@ FRICTION = 0.15
 TURN_SPEED = 7.0
 
 #sensors
-show_sens = False
+show_sens = True
 SENSOR_LENGTH = 400
 SENSOR_ANGLES = [
     90,
