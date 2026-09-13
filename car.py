@@ -217,7 +217,7 @@ class Car:
                 self.speed = 0.0
                 self.crashed = True
 
-                self.last_reward -= config.CRASH_PENALTY
+                self.last_reward += config.CRASH_PENALTY
 
                 self.update_rect()
 

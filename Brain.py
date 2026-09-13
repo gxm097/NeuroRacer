@@ -7,7 +7,7 @@ class CarBrain(nn.Module):
         super().__init__() 
 
         self.network = nn.Sequential( #run the network in sequential order
-            nn.Linear(9, 16), #9 inputs (7 sensors + speed), 16 nuetrons
+            nn.Linear(9, 16), #9 inputs (7 sensors + speed + crashed flag), 16 neurons
             nn.ReLU(),
 
             nn.Linear(16, 16),

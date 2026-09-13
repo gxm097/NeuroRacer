@@ -14,7 +14,8 @@ import config
 
 from checkpoints import (
     find_checkpoints,
-    red_mask,
+    find_lap_lines,
+    marker_mask,
     CheckpointTracker,
     TREAT_RED_AS_ROAD,
     RED_ROAD_MARGIN
@@ -401,7 +402,7 @@ _collision_rgb = pygame.surfarray.array3d(
 )
 
 
-_red = red_mask(
+_markers = marker_mask(
     _collision_rgb
 )
 
@@ -412,7 +413,7 @@ if TREAT_RED_AS_ROAD:
         drivable
         |
         (
-            _red
+            _markers
             &
             dilate(
                 drivable,
@@ -439,6 +440,17 @@ else:
     print(
         "No checkpoints found."
     )
+
+
+LAP_LINES = find_lap_lines(
+    _collision_rgb
+)
+
+
+print(
+    f"Found {len(LAP_LINES)} "
+    "lap line(s)."
+)
 
 
 # ============================================================
@@ -547,7 +559,8 @@ for _ in range(
 
     checkpoint_trackers.append(
         CheckpointTracker(
-            CHECKPOINTS
+            CHECKPOINTS,
+            lap_gates=LAP_LINES
         )
     )
 
@@ -824,15 +837,6 @@ def draw_hud(
             )
         )
 
-if config.parent_evolution:
-    dividen = 10
-    decay01 = 6
-    def survivor_decay(current_episode_count, dividen, decay):
-        if (current_episode_count / dividen) > 1 and decay > 1:
-            decay -= 1
-            dividen = dividen + 10
-        return decay
-
 # ============================================================
 # MAIN LOOP
 # ============================================================
@@ -1086,8 +1090,7 @@ while running:
     # ========================================================
     # ALL CARS DEAD?
     # ========================================================
-    
-    decay = survivor_decay(current_episode_count, dividen, decay01)
+
     if sum(active) <= (config.SURVIVOR_LIMIT):
         survivor_timer += 1
         if survivor_timer >= config.SURVIVOR_EXTRA_STEPS:
@@ -1299,7 +1302,7 @@ while running:
             "| Longest steps:",
             longest_run,
 
-            "| survivor limit:", (config.SURVIVOR_LIMIT - decay),
+            "| survivor limit:", config.SURVIVOR_LIMIT,
 
             "| session episode:", current_episode_count
         )
